@@ -1,0 +1,411 @@
+{% extends 'base.html' %}
+{% block title %}{{ post.title }} — Ovoz{% endblock %}
+
+{% block extra_css %}
+.article-hero {
+    padding: 60px 5% 0;
+    max-width: 900px; margin: 0 auto;
+}
+.article-category { margin-bottom: 16px; }
+.article-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -1.5px;
+    color: var(--white);
+    margin-bottom: 20px;
+}
+.article-excerpt {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 28px;
+    max-width: 680px;
+}
+.article-meta {
+    display: flex; align-items: center; gap: 16px;
+    padding: 20px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
+.meta-author { display: flex; align-items: center; gap: 10px; }
+.avatar-md { width: 44px; height: 44px; border-radius: 50%; overflow: hidden; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+.avatar-md img { width: 100%; height: 100%; object-fit: cover; }
+.meta-author-info .name { font-weight: 600; color: var(--text); font-size: 0.9rem; }
+.meta-author-info .date { color: var(--text-muted); font-size: 0.8rem; }
+.meta-stats { display: flex; gap: 16px; margin-left: auto; }
+.meta-stat { display: flex; align-items: center; gap: 5px; color: var(--text-muted); font-size: 0.875rem; }
+
+/* Author actions (edit/delete) */
+.author-actions { display: flex; gap: 8px; }
+
+/* Cover image */
+.article-cover {
+    width: 100%; max-width: 900px; margin: 0 auto 48px;
+    border-radius: 16px; overflow: hidden;
+    max-height: 500px;
+}
+.article-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Content */
+.article-body {
+    max-width: 720px; margin: 0 auto;
+    padding: 0 5%;
+}
+.article-content {
+    font-size: 1.05rem;
+    line-height: 1.9;
+    color: #c8c8d8;
+}
+.article-content h1, .article-content h2, .article-content h3 {
+    font-family: var(--font-display);
+    color: var(--white);
+    margin: 36px 0 16px;
+    line-height: 1.2;
+}
+.article-content p { margin-bottom: 20px; }
+.article-content img { max-width: 100%; border-radius: 10px; margin: 20px 0; }
+.article-content blockquote {
+    border-left: 3px solid var(--accent);
+    padding: 16px 24px;
+    margin: 28px 0;
+    background: var(--surface);
+    border-radius: 0 10px 10px 0;
+    color: var(--text-muted);
+    font-style: italic;
+}
+.article-content code {
+    background: var(--surface2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    color: var(--accent);
+}
+.article-content pre {
+    background: var(--surface2);
+    padding: 20px;
+    border-radius: 10px;
+    overflow-x: auto;
+    margin: 20px 0;
+    border: 1px solid var(--border);
+}
+
+/* Like bar */
+.like-bar {
+    display: flex; align-items: center; gap: 16px;
+    padding: 28px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin: 48px 0 0;
+}
+.like-btn {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 10px 20px;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.like-btn:hover { border-color: #e05555; color: #e05555; }
+.like-btn.liked { background: #2a0d0d; border-color: #e05555; color: #e05555; }
+.like-btn .icon { font-size: 1.1rem; transition: transform 0.2s; }
+.like-btn.liked .icon { transform: scale(1.2); }
+
+/* Related */
+.related-section { padding: 48px 5%; border-top: 1px solid var(--border); margin-top: 48px; }
+.related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; margin-top: 24px; }
+.related-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; text-decoration: none; transition: border-color 0.2s; display: block; }
+.related-card:hover { border-color: var(--accent); }
+.related-card .title { font-family: var(--font-display); font-weight: 700; color: var(--white); line-height: 1.3; margin-bottom: 8px; }
+.related-card .meta { font-size: 0.8rem; color: var(--text-muted); }
+
+/* Comments */
+.comments-section { padding: 48px 5%; }
+.section-title { font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; color: var(--white); margin-bottom: 32px; }
+
+.comment-form-box {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px; margin-bottom: 36px;
+}
+.comment-input {
+    width: 100%; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 16px; color: var(--text);
+    font-family: var(--font-body); font-size: 0.95rem;
+    outline: none; resize: vertical;
+    transition: border-color 0.2s;
+}
+.comment-input:focus { border-color: var(--accent); }
+.comment-input::placeholder { color: var(--text-muted); }
+
+/* Comment tree */
+.comment-item {
+    display: flex; gap: 14px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+    animation: fadeUp 0.3s ease;
+}
+@keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.comment-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--border); flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+.comment-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.comment-content { flex: 1; }
+.comment-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+.comment-author { font-weight: 600; font-size: 0.875rem; color: var(--text); }
+.comment-date { font-size: 0.75rem; color: var(--text-muted); }
+.comment-text { color: #b8b8c8; font-size: 0.9rem; line-height: 1.7; }
+.comment-actions { display: flex; gap: 12px; margin-top: 8px; }
+.reply-toggle, .delete-comment-btn {
+    background: none; border: none; cursor: pointer;
+    font-size: 0.8rem; color: var(--text-muted);
+    padding: 2px 0; font-family: var(--font-body);
+    transition: color 0.2s;
+}
+.reply-toggle:hover { color: var(--accent); }
+.delete-comment-btn:hover { color: var(--danger); }
+
+/* Replies */
+.replies { margin-top: 16px; padding-left: 20px; border-left: 2px solid var(--border); }
+.reply-item { display: flex; gap: 12px; padding: 14px 0; }
+.reply-form { margin-top: 12px; display: none; }
+.reply-form.open { display: block; animation: fadeUp 0.2s ease; }
+
+@media (max-width: 768px) {
+    .article-meta { gap: 10px; }
+    .meta-stats { margin-left: 0; }
+}
+{% endblock %}
+
+{% block content %}
+<article>
+    <div class="article-hero">
+        {% if post.category %}
+        <div class="article-category">
+            <a class="tag" href="{{ post.category.get_absolute_url }}"
+               style="background:{{ post.category.color }}22; color:{{ post.category.color }};">
+                {{ post.category.name }}
+            </a>
+        </div>
+        {% endif %}
+        <h1 class="article-title">{{ post.title }}</h1>
+        {% if post.excerpt %}
+        <p class="article-excerpt">{{ post.excerpt }}</p>
+        {% endif %}
+        <div class="article-meta">
+            <div class="meta-author">
+                <div class="avatar-md">
+                    {% if post.author.profile.avatar %}
+                        <img src="{{ post.author.profile.avatar.url }}" alt="">
+                    {% else %}👤{% endif %}
+                </div>
+                <div class="meta-author-info">
+                    <div class="name">{{ post.author.get_full_name|default:post.author.username }}</div>
+                    <div class="date">{{ post.created_at|date:"d M Y" }}{% if post.updated_at != post.created_at %} · yangilangan{% endif %}</div>
+                </div>
+            </div>
+            <div class="meta-stats">
+                <span class="meta-stat">👁 {{ post.views_count }}</span>
+                <span class="meta-stat">❤️ {{ like_count }}</span>
+                <span class="meta-stat">💬 {{ comment_count }}</span>
+            </div>
+            {% if user == post.author %}
+            <div class="author-actions">
+                <a href="{% url 'post_update' post.slug %}" class="btn btn-ghost btn-sm">✏️ Tahrirlash</a>
+                <a href="{% url 'post_delete' post.slug %}" class="btn btn-danger btn-sm">🗑️</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if post.cover_image %}
+    <div class="article-cover container">
+        <img src="{{ post.cover_image.url }}" alt="{{ post.title }}">
+    </div>
+    {% endif %}
+
+    <div class="article-body">
+        <div class="article-content">{{ post.content|safe }}</div>
+
+        <!-- Like bar -->
+        <div class="like-bar">
+            {% if user.is_authenticated %}
+            <button class="like-btn {% if is_liked %}liked{% endif %}" id="likeBtn"
+                    data-url="{% url 'like_post' post.slug %}">
+                <span class="icon">{% if is_liked %}❤️{% else %}🤍{% endif %}</span>
+                <span id="likeCount">{{ like_count }}</span>
+                <span>yoqdi</span>
+            </button>
+            {% else %}
+            <a href="{% url 'login' %}" class="like-btn">
+                <span class="icon">🤍</span>
+                <span>{{ like_count }} yoqdi</span>
+            </a>
+            {% endif %}
+            <span class="meta-stat" style="margin-left:8px;">💬 {{ comment_count }} izoh</span>
+        </div>
+    </div>
+</article>
+
+<!-- Related posts -->
+{% if related_posts %}
+<div class="related-section container-narrow">
+    <h3 class="section-title">O'xshash maqolalar</h3>
+    <div class="related-grid">
+        {% for rp in related_posts %}
+        <a class="related-card" href="{{ rp.get_absolute_url }}">
+            <div class="title">{{ rp.title }}</div>
+            <div class="meta">{{ rp.author.username }} · {{ rp.created_at|date:"d M Y" }}</div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Comments -->
+<div class="comments-section container-narrow" id="comments">
+    <h3 class="section-title">💬 Izohlar ({{ comment_count }})</h3>
+
+    {% if user.is_authenticated %}
+    <div class="comment-form-box">
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+            <div class="comment-avatar">
+                {% if user.profile.avatar %}<img src="{{ user.profile.avatar.url }}" alt="">{% else %}👤{% endif %}
+            </div>
+            <form method="post" action="{% url 'add_comment' post.slug %}" style="flex:1;">
+                {% csrf_token %}
+                {{ comment_form.text }}
+                <div style="margin-top:10px;display:flex;justify-content:flex-end;">
+                    <button type="submit" class="btn btn-primary btn-sm">Izoh qoldirish</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% else %}
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;text-align:center;margin-bottom:36px;">
+        <p style="color:var(--text-muted);">Izoh qoldirish uchun <a href="{% url 'login' %}" style="color:var(--accent);">tizimga kiring</a>.</p>
+    </div>
+    {% endif %}
+
+    <!-- Comment list -->
+    {% for comment in comments %}
+    <div class="comment-item" id="comment-{{ comment.id }}">
+        <div class="comment-avatar">
+            {% if comment.author.profile.avatar %}<img src="{{ comment.author.profile.avatar.url }}" alt="">{% else %}👤{% endif %}
+        </div>
+        <div class="comment-content">
+            <div class="comment-header">
+                <span class="comment-author">{{ comment.author.username }}</span>
+                <span class="comment-date">{{ comment.created_at|timesince }} avval</span>
+            </div>
+            <div class="comment-text">{{ comment.text }}</div>
+            <div class="comment-actions">
+                {% if user.is_authenticated %}
+                <button class="reply-toggle" onclick="toggleReply({{ comment.id }})">↩ Javob</button>
+                {% endif %}
+                {% if user == comment.author or user == post.author %}
+                <form method="post" action="{% url 'delete_comment' comment.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="delete-comment-btn">✕ O'chirish</button>
+                </form>
+                {% endif %}
+            </div>
+
+            <!-- Reply form -->
+            {% if user.is_authenticated %}
+            <div class="reply-form" id="reply-form-{{ comment.id }}">
+                <form method="post" action="{% url 'add_comment' post.slug %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                    {{ reply_form.text }}
+                    <div style="margin-top:8px;display:flex;gap:8px;justify-content:flex-end;">
+                        <button type="button" class="btn btn-ghost btn-sm" onclick="toggleReply({{ comment.id }})">Bekor</button>
+                        <button type="submit" class="btn btn-primary btn-sm">Yuborish</button>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+
+            <!-- Nested replies -->
+            {% if comment.replies.all %}
+            <div class="replies">
+                {% for reply in comment.get_replies %}
+                <div class="reply-item" id="comment-{{ reply.id }}">
+                    <div class="comment-avatar" style="width:32px;height:32px;font-size:0.8rem;">
+                        {% if reply.author.profile.avatar %}<img src="{{ reply.author.profile.avatar.url }}" alt="">{% else %}👤{% endif %}
+                    </div>
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <span class="comment-author">{{ reply.author.username }}</span>
+                            <span class="comment-date">{{ reply.created_at|timesince }} avval</span>
+                        </div>
+                        <div class="comment-text">{{ reply.text }}</div>
+                        {% if user == reply.author or user == post.author %}
+                        <div class="comment-actions">
+                            <form method="post" action="{% url 'delete_comment' reply.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="delete-comment-btn">✕ O'chirish</button>
+                            </form>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% empty %}
+    <div style="text-align:center;padding:40px 0;color:var(--text-muted);">
+        <p style="font-size:2rem;">💬</p>
+        <p>Hali izoh yo'q. Birinchi bo'ling!</p>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Toggle reply form
+function toggleReply(id) {
+    const form = document.getElementById('reply-form-' + id);
+    form.classList.toggle('open');
+    if (form.classList.contains('open')) {
+        form.querySelector('textarea').focus();
+    }
+}
+
+// AJAX Like
+const likeBtn = document.getElementById('likeBtn');
+if (likeBtn) {
+    likeBtn.addEventListener('click', async () => {
+        try {
+            const res = await fetch(likeBtn.dataset.url, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/json' }
+            });
+            const data = await res.json();
+            const icon = likeBtn.querySelector('.icon');
+            const count = document.getElementById('likeCount');
+            count.textContent = data.count;
+            if (data.liked) {
+                likeBtn.classList.add('liked');
+                icon.textContent = '❤️';
+                icon.style.transform = 'scale(1.4)';
+                setTimeout(() => icon.style.transform = 'scale(1.2)', 200);
+            } else {
+                likeBtn.classList.remove('liked');
+                icon.textContent = '🤍';
+                icon.style.transform = '';
+            }
+        } catch(e) { console.error(e); }
+    });
+}
+</script>
+{% endblock %}

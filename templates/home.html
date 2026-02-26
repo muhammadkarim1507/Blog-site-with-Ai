@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Bosh sahifa{% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+    <h1>📝 Blogga Xush Kelibsiz!</h1>
+    {% if user.is_authenticated %}
+        <p class="lead">Salom, <strong>{{ user.username }}</strong>! Siz tizimdasiz.</p>
+        <a href="{% url 'profile' %}" class="btn btn-primary">Profilim</a>
+    {% else %}
+        <p class="lead">Blog o'qish va yozish uchun tizimga kiring.</p>
+        <a href="{% url 'login' %}" class="btn btn-success me-2">Kirish</a>
+        <a href="{% url 'register' %}" class="btn btn-outline-primary">Ro'yxatdan o'tish</a>
+    {% endif %}
+</div>
+{% endblock %}

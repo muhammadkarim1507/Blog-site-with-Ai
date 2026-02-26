@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% block title %}{{ page_title }} — Ovoz{% endblock %}
+
+{% block extra_css %}
+.form-page { max-width: 860px; margin: 0 auto; padding: 48px 5%; }
+.form-page-header { margin-bottom: 40px; }
+.form-page-header h1 {
+    font-family: var(--font-display);
+    font-size: 2.5rem; font-weight: 900;
+    color: var(--white); letter-spacing: -1px;
+}
+.form-page-header p { color: var(--text-muted); margin-top: 8px; }
+
+.form-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px;
+}
+.form-group { margin-bottom: 24px; }
+.form-label {
+    display: block;
+    font-size: 0.85rem; font-weight: 600;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+.form-error { color: var(--danger); font-size: 0.8rem; margin-top: 4px; }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+.form-actions {
+    display: flex; gap: 12px; justify-content: flex-end;
+    margin-top: 32px; padding-top: 24px;
+    border-top: 1px solid var(--border);
+}
+
+/* CKEditor override */
+.django-ckeditor-widget { width: 100% !important; }
+.ck-editor__editable {
+    background: var(--bg) !important;
+    color: var(--text) !important;
+    min-height: 350px !important;
+    border-color: var(--border) !important;
+    font-family: var(--font-body) !important;
+    font-size: 1rem !important;
+    line-height: 1.8 !important;
+}
+.ck-toolbar { background: var(--surface2) !important; border-color: var(--border) !important; }
+
+/* Cover preview */
+.cover-preview {
+    margin-top: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+    max-height: 200px;
+    display: none;
+}
+.cover-preview img { width: 100%; object-fit: cover; display: block; }
+.cover-preview.show { display: block; }
+
+@media (max-width: 640px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .form-card { padding: 24px; }
+}
+{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <div class="form-page-header">
+        <h1>{{ page_title }}</h1>
+        <p>Fikrlaringizni dunyoga bildiring.</p>
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-card">
+
+            <!-- Sarlavha -->
+            <div class="form-group">
+                <label class="form-label">Sarlavha *</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <div class="form-error">{{ form.title.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Category + Status -->
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Kategoriya</label>
+                    {{ form.category }}
+                    {% if form.category.errors %}
+                        <div class="form-error">{{ form.category.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Holat</label>
+                    {{ form.status }}
+                    {% if form.status.errors %}
+                        <div class="form-error">{{ form.status.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Excerpt -->
+            <div class="form-group">
+                <label class="form-label">Qisqa tavsif <span style="opacity:0.5;">(ixtiyoriy)</span></label>
+                {{ form.excerpt }}
+                {% if form.excerpt.errors %}
+                    <div class="form-error">{{ form.excerpt.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Cover image -->
+            <div class="form-group">
+                <label class="form-label">Muqova rasmi <span style="opacity:0.5;">(ixtiyoriy)</span></label>
+                {% if form.instance.cover_image %}
+                <div class="cover-preview show" id="coverPreview">
+                    <img src="{{ form.instance.cover_image.url }}" id="coverImg" alt="Joriy rasm">
+                </div>
+                {% else %}
+                <div class="cover-preview" id="coverPreview">
+                    <img src="" id="coverImg" alt="">
+                </div>
+                {% endif %}
+                {{ form.cover_image }}
+                {% if form.cover_image.errors %}
+                    <div class="form-error">{{ form.cover_image.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Content -->
+            <div class="form-group">
+                <label class="form-label">Kontent *</label>
+                {{ form.content }}
+                {% if form.content.errors %}
+                    <div class="form-error">{{ form.content.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            {% if form.non_field_errors %}
+            <div class="form-error" style="margin-bottom:16px;">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            <div class="form-actions">
+                <a href="{% url 'post_list' %}" class="btn btn-ghost">Bekor qilish</a>
+                <button type="submit" class="btn btn-primary">{{ submit_text }} →</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Cover image preview
+document.querySelector('input[type="file"]')?.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            document.getElementById('coverImg').src = ev.target.result;
+            document.getElementById('coverPreview').classList.add('show');
+        };
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+{% endblock %}

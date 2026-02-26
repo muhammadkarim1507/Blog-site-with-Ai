@@ -1,0 +1,309 @@
+{% extends 'base.html' %}
+{% block title %}Ovoz — Barcha postlar{% endblock %}
+
+{% block extra_css %}
+.hero {
+    padding: 80px 5% 60px;
+    border-bottom: 1px solid var(--border);
+}
+.hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    color: var(--white);
+}
+.hero h1 em { color: var(--accent); font-style: italic; }
+.hero p { color: var(--text-muted); margin-top: 16px; font-size: 1.1rem; max-width: 500px; }
+
+/* Featured post */
+.featured {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden;
+    margin: 48px 0;
+    min-height: 400px;
+}
+.featured-img {
+    background: var(--surface2);
+    position: relative; overflow: hidden;
+}
+.featured-img img { width: 100%; height: 100%; object-fit: cover; }
+.featured-img .no-img {
+    width: 100%; height: 100%; min-height: 300px;
+    background: linear-gradient(135deg, var(--surface2) 0%, #2a1a3a 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 5rem;
+}
+.featured-body {
+    padding: 48px;
+    background: var(--surface);
+    display: flex; flex-direction: column; justify-content: center;
+}
+.featured-label {
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 16px;
+}
+.featured-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    font-weight: 700; line-height: 1.2;
+    color: var(--white); text-decoration: none;
+}
+.featured-title:hover { color: var(--accent); }
+.featured-excerpt { color: var(--text-muted); margin-top: 16px; line-height: 1.7; }
+.featured-meta { display: flex; align-items: center; gap: 16px; margin-top: 24px; }
+.avatar-sm {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--border); object-fit: cover;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; color: var(--text-muted);
+    overflow: hidden;
+}
+
+/* Filters */
+.filters {
+    display: flex; align-items: center; gap: 12px;
+    flex-wrap: wrap; padding: 24px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+}
+.search-box {
+    flex: 1; min-width: 200px;
+    display: flex; gap: 8px;
+}
+.sort-select { background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 8px 12px; font-family: var(--font-body); font-size: 0.875rem; outline: none; cursor: pointer; }
+
+/* Grid */
+.posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 28px;
+}
+.post-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: transform 0.25s, border-color 0.25s;
+    display: flex; flex-direction: column;
+}
+.post-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+
+.card-img {
+    height: 200px; overflow: hidden;
+    background: var(--surface2);
+    position: relative;
+}
+.card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+.post-card:hover .card-img img { transform: scale(1.04); }
+.card-img .no-img {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3rem;
+    background: linear-gradient(135deg, var(--surface2), #1a1a2e);
+}
+
+.card-body { padding: 22px; flex: 1; display: flex; flex-direction: column; }
+.card-category { margin-bottom: 10px; }
+.card-title {
+    font-family: var(--font-display);
+    font-size: 1.2rem; font-weight: 700;
+    color: var(--white); text-decoration: none;
+    line-height: 1.3; display: block;
+}
+.card-title:hover { color: var(--accent); }
+.card-excerpt { color: var(--text-muted); font-size: 0.875rem; margin-top: 8px; line-height: 1.6; flex: 1; }
+.card-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 18px; padding-top: 14px;
+    border-top: 1px solid var(--border);
+}
+.card-author { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-muted); }
+.card-stats { display: flex; gap: 12px; font-size: 0.8rem; color: var(--text-muted); }
+.card-stats span { display: flex; align-items: center; gap: 4px; }
+
+/* Pagination */
+.pagination { display: flex; justify-content: center; gap: 8px; margin-top: 60px; }
+.page-link { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 8px; text-decoration: none; color: var(--text-muted); border: 1px solid var(--border); font-size: 0.875rem; transition: all 0.2s; }
+.page-link:hover, .page-link.active { background: var(--accent); color: #0a0a0f; border-color: var(--accent); }
+
+/* Empty */
+.empty-state { text-align: center; padding: 80px 0; color: var(--text-muted); }
+.empty-state .icon { font-size: 4rem; margin-bottom: 16px; }
+.empty-state h3 { font-family: var(--font-display); font-size: 1.5rem; color: var(--text); }
+
+/* Category pills */
+.category-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+.category-pill { padding: 5px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; text-decoration: none; border: 1px solid var(--border); color: var(--text-muted); transition: all 0.2s; }
+.category-pill:hover, .category-pill.active { border-color: var(--accent); color: var(--accent); }
+
+@media (max-width: 768px) {
+    .featured { grid-template-columns: 1fr; }
+    .featured-body { padding: 28px; }
+    .posts-grid { grid-template-columns: 1fr; }
+}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="hero">
+        <h1>Fikrlar.<br><em>Hikoyalar.</em><br>Ovozlar.</h1>
+        <p>Eng yaxshi mualliflarning eng yangi maqolalari.</p>
+    </div>
+
+    {% if featured_post and not current_q %}
+    <div class="featured">
+        <div class="featured-img">
+            {% if featured_post.cover_image %}
+                <img src="{{ featured_post.cover_image.url }}" alt="{{ featured_post.title }}">
+            {% else %}
+                <div class="no-img">📖</div>
+            {% endif %}
+        </div>
+        <div class="featured-body">
+            <div class="featured-label">⭐ Eng ko'p o'qilgan</div>
+            {% if featured_post.category %}
+                <a class="tag mb-2" href="{{ featured_post.category.get_absolute_url }}"
+                   style="background:{{ featured_post.category.color }}22; color:{{ featured_post.category.color }}; margin-bottom:12px;">
+                    {{ featured_post.category.name }}
+                </a>
+            {% endif %}
+            <a class="featured-title" href="{{ featured_post.get_absolute_url }}">
+                {{ featured_post.title }}
+            </a>
+            <p class="featured-excerpt">{{ featured_post.excerpt|truncatechars:180 }}</p>
+            <div class="featured-meta">
+                <div class="avatar-sm">
+                    {% if featured_post.author.profile.avatar %}
+                        <img src="{{ featured_post.author.profile.avatar.url }}" alt="">
+                    {% else %}
+                        👤
+                    {% endif %}
+                </div>
+                <div>
+                    <div style="font-size:0.875rem; color:var(--text);">{{ featured_post.author.get_full_name|default:featured_post.author.username }}</div>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">{{ featured_post.created_at|date:"d M, Y" }} · {{ featured_post.views_count }} ko'rishlar</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Kategoriyalar -->
+    {% if categories %}
+    <div class="category-pills">
+        <a class="category-pill {% if not current_category %}active{% endif %}" href="?sort={{ current_sort }}">Barchasi</a>
+        {% for cat in categories %}
+        <a class="category-pill {% if current_category == cat.slug %}active{% endif %}"
+           href="?category={{ cat.slug }}&sort={{ current_sort }}">
+            {{ cat.name }} <span style="opacity:0.6;">({{ cat.post_count }})</span>
+        </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Filter -->
+    <div class="filters">
+        <form class="search-box" method="get">
+            {% if current_category %}<input type="hidden" name="category" value="{{ current_category }}">{% endif %}
+            <input type="text" name="q" value="{{ current_q }}" placeholder="Qidirish..." class="form-input" style="max-width:300px;">
+            <button type="submit" class="btn btn-primary">Izlash</button>
+            {% if current_q %}<a href="?" class="btn btn-ghost">✕</a>{% endif %}
+        </form>
+        <form method="get">
+            {% if current_q %}<input type="hidden" name="q" value="{{ current_q }}">{% endif %}
+            {% if current_category %}<input type="hidden" name="category" value="{{ current_category }}">{% endif %}
+            <select name="sort" class="sort-select" onchange="this.form.submit()">
+                <option value="newest" {% if current_sort == 'newest' %}selected{% endif %}>Yangi</option>
+                <option value="popular" {% if current_sort == 'popular' %}selected{% endif %}>Mashhur</option>
+                <option value="most_liked" {% if current_sort == 'most_liked' %}selected{% endif %}>Ko'p yoqilgan</option>
+            </select>
+        </form>
+    </div>
+
+    <!-- Postlar -->
+    {% if posts %}
+    <div class="posts-grid">
+        {% for post in posts %}
+        <article class="post-card">
+            <div class="card-img">
+                {% if post.cover_image %}
+                    <img src="{{ post.cover_image.url }}" alt="{{ post.title }}">
+                {% else %}
+                    <div class="no-img">📝</div>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% if post.category %}
+                <div class="card-category">
+                    <a class="tag" href="{{ post.category.get_absolute_url }}"
+                       style="background:{{ post.category.color }}22; color:{{ post.category.color }};">
+                        {{ post.category.name }}
+                    </a>
+                </div>
+                {% endif %}
+                <a class="card-title" href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+                <p class="card-excerpt">{{ post.excerpt|truncatechars:120 }}</p>
+                <div class="card-footer">
+                    <div class="card-author">
+                        <div class="avatar-sm" style="width:28px;height:28px;font-size:0.75rem;">
+                            {% if post.author.profile.avatar %}
+                                <img src="{{ post.author.profile.avatar.url }}" alt="">
+                            {% else %}👤{% endif %}
+                        </div>
+                        <span>{{ post.author.username }}</span>
+                        <span>·</span>
+                        <span>{{ post.created_at|date:"d M" }}</span>
+                    </div>
+                    <div class="card-stats">
+                        <span>👁 {{ post.views_count }}</span>
+                        <span>❤️ {{ post.like_count }}</span>
+                        <span>💬 {{ post.comment_count }}</span>
+                    </div>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <nav class="pagination">
+        {% if page_obj.has_previous %}
+            <a class="page-link" href="?page=1{% if current_q %}&q={{ current_q }}{% endif %}">«</a>
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if current_q %}&q={{ current_q }}{% endif %}">‹</a>
+        {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <span class="page-link active">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a class="page-link" href="?page={{ num }}{% if current_q %}&q={{ current_q }}{% endif %}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if current_q %}&q={{ current_q }}{% endif %}">›</a>
+            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if current_q %}&q={{ current_q }}{% endif %}">»</a>
+        {% endif %}
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <div class="empty-state">
+        <div class="icon">🔍</div>
+        <h3>Hech narsa topilmadi</h3>
+        <p class="mt-2">
+            {% if current_q %}
+                "<strong>{{ current_q }}</strong>" bo'yicha postlar topilmadi.
+            {% else %}
+                Hozircha postlar yo'q.
+            {% endif %}
+        </p>
+        {% if user.is_authenticated %}
+            <a href="{% url 'post_create' %}" class="btn btn-primary mt-3">Birinchi post yozing</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

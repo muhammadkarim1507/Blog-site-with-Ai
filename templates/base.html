@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Ovoz — Blog{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0a0f;
+            --surface: #13131a;
+            --surface2: #1c1c26;
+            --border: #2a2a38;
+            --text: #e8e8f0;
+            --text-muted: #7a7a9a;
+            --accent: #f0c060;
+            --accent2: #e07040;
+            --white: #ffffff;
+            --danger: #e05555;
+            --success: #50c878;
+            --font-display: 'Playfair Display', Georgia, serif;
+            --font-body: 'DM Sans', system-ui, sans-serif;
+        }
+        html { scroll-behavior: smooth; }
+        body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 16px; line-height: 1.7; min-height: 100vh; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+        .navbar {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(10,10,15,0.92);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 5%;
+            display: flex; align-items: center; justify-content: space-between;
+            height: 64px;
+        }
+        .navbar-brand { font-family: var(--font-display); font-size: 1.6rem; font-weight: 900; color: var(--white); text-decoration: none; letter-spacing: -1px; }
+        .navbar-brand span { color: var(--accent); }
+        .navbar-nav { display: flex; align-items: center; gap: 8px; }
+        .nav-link { color: var(--text-muted); text-decoration: none; font-size: 0.875rem; font-weight: 500; padding: 6px 14px; border-radius: 6px; transition: all 0.2s; }
+        .nav-link:hover { color: var(--text); background: var(--surface); }
+
+        .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border-radius: 8px; font-size: 0.875rem; font-weight: 500; font-family: var(--font-body); cursor: pointer; border: none; text-decoration: none; transition: all 0.2s; }
+        .btn-primary { background: var(--accent); color: #0a0a0f; }
+        .btn-primary:hover { background: #f5d080; transform: translateY(-1px); }
+        .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+        .btn-ghost:hover { color: var(--text); border-color: var(--text-muted); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #c04040; }
+        .btn-sm { padding: 5px 12px; font-size: 0.8rem; }
+
+        .messages-container { position: fixed; top: 74px; right: 20px; z-index: 200; display: flex; flex-direction: column; gap: 8px; }
+        .alert { padding: 12px 18px; border-radius: 10px; font-size: 0.875rem; display: flex; align-items: center; gap: 10px; border: 1px solid; animation: slideIn 0.3s ease; max-width: 360px; cursor: pointer; }
+        @keyframes slideIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .alert-success { background: #0d2a1a; border-color: var(--success); color: var(--success); }
+        .alert-error, .alert-danger { background: #2a0d0d; border-color: var(--danger); color: var(--danger); }
+        .alert-info { background: #0d1a2a; border-color: #5090e0; color: #5090e0; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 5%; }
+        .container-narrow { max-width: 780px; margin: 0 auto; padding: 0 5%; }
+
+        .form-input { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--text); font-family: var(--font-body); font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
+        .form-input:focus { border-color: var(--accent); }
+        .form-input::placeholder { color: var(--text-muted); }
+        select.form-input option { background: var(--surface2); }
+
+        .tag { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 500; text-decoration: none; transition: opacity 0.2s; }
+        .tag:hover { opacity: 0.8; }
+
+        footer { border-top: 1px solid var(--border); padding: 40px 5%; text-align: center; color: var(--text-muted); font-size: 0.85rem; margin-top: 80px; }
+        .text-muted { color: var(--text-muted); }
+        .text-accent { color: var(--accent); }
+        .mt-1{margin-top:8px}.mt-2{margin-top:16px}.mt-3{margin-top:24px}.mt-4{margin-top:32px}
+        .mb-1{margin-bottom:8px}.mb-2{margin-bottom:16px}
+        {% block extra_css %}{% endblock %}
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <a class="navbar-brand" href="{% url 'post_list' %}">Ovoz<span>.</span></a>
+    <div class="navbar-nav">
+        {% if user.is_authenticated %}
+            <a class="btn btn-primary btn-sm" href="{% url 'post_create' %}">+ Yozish</a>
+            <a class="nav-link" href="{% url 'profile' %}">{{ user.username }}</a>
+            <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-ghost btn-sm">Chiqish</button>
+            </form>
+        {% else %}
+            <a class="nav-link" href="{% url 'login' %}">Kirish</a>
+            <a class="btn btn-primary btn-sm" href="{% url 'register' %}">Ro'yxat</a>
+        {% endif %}
+    </div>
+</nav>
+<div class="messages-container">
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" onclick="this.remove()">{{ message }}</div>
+    {% endfor %}
+</div>
+{% block content %}{% endblock %}
+<footer>
+    <p>© 2025 <strong>Ovoz</strong> — Fikrlar uchun maydon.</p>
+</footer>
+<script>
+    setTimeout(() => {
+        document.querySelectorAll('.alert').forEach(a => {
+            a.style.transition = 'opacity 0.4s';
+            a.style.opacity = '0';
+            setTimeout(() => a.remove(), 400);
+        });
+    }, 4000);
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

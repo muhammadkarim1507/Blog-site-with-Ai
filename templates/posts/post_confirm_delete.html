@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Postni o'chirish — Ovoz{% endblock %}
+
+{% block extra_css %}
+.delete-page { max-width: 500px; margin: 80px auto; padding: 0 5%; text-align: center; }
+.delete-icon { font-size: 4rem; margin-bottom: 24px; }
+.delete-page h1 { font-family: var(--font-display); font-size: 2rem; font-weight: 700; color: var(--white); margin-bottom: 12px; }
+.delete-page p { color: var(--text-muted); margin-bottom: 32px; }
+.post-title-preview {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 20px;
+    font-family: var(--font-display); font-size: 1.1rem;
+    color: var(--text); margin-bottom: 32px;
+}
+.delete-actions { display: flex; gap: 12px; justify-content: center; }
+{% endblock %}
+
+{% block content %}
+<div class="delete-page">
+    <div class="delete-icon">🗑️</div>
+    <h1>Postni o'chirish</h1>
+    <p>Bu amalni qaytarib bo'lmaydi. Ishonchingiz komilmi?</p>
+    <div class="post-title-preview">"{{ object.title }}"</div>
+    <div class="delete-actions">
+        <a href="{{ object.get_absolute_url }}" class="btn btn-ghost">← Orqaga</a>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Ha, o'chirish</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
