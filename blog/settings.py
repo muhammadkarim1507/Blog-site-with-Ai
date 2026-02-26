@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-zwvv#mmwste+eoz0xi1a&kg3gzn9^ub&cvqi9i++@g^tgr7+2e'
+# SECRET_KEY = 'django-insecure-zwvv#mmwste+eoz0xi1a&kg3gzn9^ub&cvqi9i++@g^tgr7+2e'
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-local-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -60,7 +60,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'blog.urls'
+ROOT_URLCONF = 'postgresql://blog_db_i7li_user:1B07OcNGuXSmqTGeI2CChosaLb6poOkn@dpg-d6g8pmp4tr6s73eu4big-a/blog_db_i7li'
 
 TEMPLATES = [
     {
