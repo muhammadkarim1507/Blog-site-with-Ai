@@ -60,7 +60,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'postgresql://blog_db_i7li_user:1B07OcNGuXSmqTGeI2CChosaLb6poOkn@dpg-d6g8pmp4tr6s73eu4big-a/blog_db_i7li'
+# ROOT_URLCONF = 'postgresql://blog_db_i7li_user:1B07OcNGuXSmqTGeI2CChosaLb6poOkn@dpg-d6g8pmp4tr6s73eu4big-a/blog_db_i7li'
+ROOT_URLCONF = 'blog.urls'
 
 TEMPLATES = [
     {
